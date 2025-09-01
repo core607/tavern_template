@@ -51,10 +51,18 @@
     "type-fest": "^4.41.0",
     "typescript": "6.0.0-dev.20250807",
     "vue-loader": "^17.4.2",
+<<<<<<< HEAD
+=======
+    "vue-style-loader": "^4.1.3",
+>>>>>>> 1d73865dc6a3ceff57e1eece3005bd77c4887d84
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+<<<<<<< HEAD
+=======
+    "@vueuse/core": "^13.8.0",
+>>>>>>> 1d73865dc6a3ceff57e1eece3005bd77c4887d84
     "dedent": "^1.6.0",
     "jquery": "^3.7.1",
     "jqueryui": "^1.11.1",
