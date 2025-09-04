@@ -135,7 +135,8 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
               test: /\.tsx?$/,
               loader: 'ts-loader',
               options: {
-                transpileOnly: false,
+                transpileOnly: true,
+                appendTsSuffixTo: [/\.vue$/],
                 onlyCompileBundledFiles: true,
                 compilerOptions: {
                   noUnusedLocals: false,
@@ -169,7 +170,8 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
               test: /\.tsx?$/,
               loader: 'ts-loader',
               options: {
-                transpileOnly: false,
+                transpileOnly: true,
+                appendTsSuffixTo: [/\.vue$/],
                 onlyCompileBundledFiles: true,
                 compilerOptions: {
                   noUnusedLocals: false,
