@@ -646,29 +646,7 @@ function enhanceEmbeds(root: HTMLElement|null){
     iframe.style.background = 'transparent';
     iframe.style.minHeight = '0px';
     iframe.style.height = '0px';
-    // 为常见前端库（如 Vue/VueRouter）缺失的场景注入前置依赖，避免 about:srcdoc 下运行时报错（如 __vccOpts 未定义）
-    let htmlToUse = html;
-    try {
-      const hasInlineScript = /<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/i.test(html);
-      const needsVue = hasInlineScript || /__vccOpts|\bVue\b|createApp\(/.test(html);
-      if (needsVue) {
-        const vueCdn = 'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js';
-        const routerCdn = 'https://cdn.jsdelivr.net/npm/vue-router@4/dist/vue-router.global.prod.js';
-        const prelude = [
-          '<meta charset="utf-8">',
-          `<script src="${vueCdn}"><\/script>`,
-          `<script src="${routerCdn}"><\/script>`,
-          '<script>window.onerror=function(){return true};<\/script>',
-        ].join('');
-        const hasDoc = /<!doctype|<html[\s>]/i.test(html);
-        if (hasDoc) {
-          htmlToUse = html.replace(/<head[^>]*>/i, m => m + prelude);
-        } else {
-          htmlToUse = `<!doctype html><html><head>${prelude}</head><body>${html}</body></html>`;
-        }
-      }
-    } catch {}
-    try { (iframe as any).srcdoc = htmlToUse; } catch { iframe.setAttribute('srcdoc', htmlToUse); }
+    try { (iframe as any).srcdoc = html; } catch { iframe.setAttribute('srcdoc', html); }
 
     const fitHeight = () => {
       try {
@@ -1416,9 +1394,9 @@ function parseLiteral(input: string): { body: string; flags: string } | null {
 .sum { color: #6b4f3e; }
 .sum .sep { margin: 0 6px; color: #b08b5f; }
 .sum .warn { color: #a33f3f; }
-+.warn-msg { color: #a33f3f; font-size: 12px; margin-left: 8px; }
-+button.btn[disabled],
-+button.btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.2); }
+.warn-msg { color: #a33f3f; font-size: 12px; margin-left: 8px; }
+button.btn[disabled],
+button.btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.2); }
 
 /* 通用行布局与商店条目防溢出处理 */
 .row.between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -1579,15 +1557,15 @@ function parseLiteral(input: string): { body: string; flags: string } | null {
 ::global(html[data-unlimited-theme='unl-night']) .gear,::global(html[data-unlimited-theme='unl-night']) .theme-toggle { background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.2); color: #ffd68a; }
 ::global(html[data-unlimited-theme='unl-night']) .opts-card { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18); }
 ::global(html[data-unlimited-theme='unl-night']) .evo-section { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18); }
-+/* Night buttons/tabs overrides */
-+::global(html[data-unlimited-theme='unl-night']) .tabs .tab { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #e6e9ee; }
-+::global(html[data-unlimited-theme='unl-night']) .tabs .tab.a { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.28); color: #ffffff; }
-+::global(html[data-unlimited-theme='unl-night']) .btn { background: #3a4250; color: #e6e9ee; border: 1px solid #6c7a90; }
-+::global(html[data-unlimited-theme='unl-night']) .btn.small { background: #3a4250; }
-+::global(html[data-unlimited-theme='unl-night']) .a-btn { background: #3a4250; color: #e6e9ee; border: 1px solid #6c7a90; }
-+::global(html[data-unlimited-theme='unl-night']) input.a-input { background: #2d333b; color: #e6e9ee; border-color: #6c7a90; }
-+::global(html[data-unlimited-theme='unl-night']) .sum { color: #c9d1d9; }
-+::global(html[data-unlimited-theme='unl-night']) .sum .warn { color: #ff7a7a; }
+/* Night buttons/tabs overrides */
+::global(html[data-unlimited-theme='unl-night']) .tabs .tab { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #e6e9ee; }
+::global(html[data-unlimited-theme='unl-night']) .tabs .tab.a { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.28); color: #ffffff; }
+::global(html[data-unlimited-theme='unl-night']) .btn { background: #3a4250; color: #e6e9ee; border: 1px solid #6c7a90; }
+::global(html[data-unlimited-theme='unl-night']) .btn.small { background: #3a4250; }
+::global(html[data-unlimited-theme='unl-night']) .a-btn { background: #3a4250; color: #e6e9ee; border: 1px solid #6c7a90; }
+::global(html[data-unlimited-theme='unl-night']) input.a-input { background: #2d333b; color: #e6e9ee; border-color: #6c7a90; }
+::global(html[data-unlimited-theme='unl-night']) .sum { color: #c9d1d9; }
+::global(html[data-unlimited-theme='unl-night']) .sum .warn { color: #ff7a7a; }
 </style>
 <style>
 html[data-unlimited-theme='unl-night'] .parchment {
