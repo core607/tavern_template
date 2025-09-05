@@ -65,6 +65,17 @@
               <div class="prop"><div class="pname">意志豁免</div><div class="pval">+{{ v(preset['意志豁免'], 0) }}</div></div>
             </div>
           </div>
+          <div class="prop" style="margin-top:6px">
+            <div class="pname">属性修正</div>
+            <div class="grid3">
+              <div v-for="(key, idx) in sixKeys" :key="'mod'+idx" class="prop">
+                <div class="row between">
+                  <div class="pname">{{ key }}修正</div>
+                  <div class="pval">+{{ v(mods[key + '修正'] ?? mods[key], 0) }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
           
         </div>
       </div>
@@ -330,6 +341,14 @@
                   <div class="prop"><div class="row between"><div class="pname">SP</div><div class="pval">{{ fmt(charModal.der?.SP) }}/{{ fmt(charModal.der?.['SP上限']) }}</div></div><div class="bar sp"><div class="val" :style="{ width: pct(charModal.der?.SP, charModal.der?.['SP上限']) + '%' }"></div></div></div>
                 </div>
                 <div class="prop" style="margin-top:8px">
+                  <div class="pname">属性修正</div>
+                  <div class="grid2">
+                    <div v-for="k in sixKeys" :key="'cmb'+k" class="prop">
+                      <div class="row between"><div class="pname">{{ k }}修正</div><div class="pval">+{{ v((charModal.mods?.[k+'修正']) ?? (charModal.mods?.[k]) , 0) }}</div></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="prop" style="margin-top:8px">
                   <div class="pname">预设计算</div>
                   <div class="grid3">
                     <div class="prop"><div class="pname">先攻修正</div><div class="pval">+{{ v(charModal.preset?.['先攻修正'], 0) }}</div></div>
@@ -465,6 +484,7 @@ type ViewMode = 'full' | 'status' | 'world' | 'roles' | 'quests' | 'inventory';
 const props = withDefaults(defineProps<{ view?: ViewMode }>(), { view: 'full' });
 
 const me = ref<any>({});
+const statData = ref<Record<string, any>>({});
 const meLoaded = ref(false);
 const hasMe = computed(() => !!me.value && !!me.value.姓名);
 
@@ -472,6 +492,7 @@ onMounted(async () => {
   try {
     const msgs = await getChatMessages(getCurrentMessageId());
     const stat_data = msgs?.[0]?.data?.stat_data || {};
+    statData.value = stat_data || {};
     const found = Object.values(stat_data).find((v: any) => v && (v as any).姓名) as any;
     me.value = found || {};
   } catch {
@@ -510,6 +531,7 @@ function showSection(section: 'status' | 'world' | 'roles' | 'quests' | 'invento
 const base = computed(() => me.value?.属性?.基础 || {});
 const der = computed(() => me.value?.属性?.衍生 || {});
 const preset = computed(() => me.value?.属性?.预设检定 || {});
+const mods = computed(() => me.value?.属性?.修正值 || {});
 const rank = computed(() => v(me.value?.属性?.综合评级, 'D'));
 const sixKeys = ['力量', '体力', '敏捷', '智力', '精神', '魅力'] as const;
 const WORLD_RANKS = ['SSS级','SS级','S级','A级','B级','C级','D级','E级','F级'] as const;
@@ -875,6 +897,14 @@ function openDetail(obj: any, type: 'equip' | 'item' | 'blood' | 'skill' | 'char
         }
       }
     });
+  } else if (rawAttr && typeof rawAttr === 'object') {
+    try {
+      const o = rawAttr as Record<string, any>;
+      const six = ['力量','体力','敏捷','智力','精神','魅力'];
+      six.forEach(k => { if (o[k] !== undefined) stats.push({ key: k, value: String(o[k]) }); });
+      const mapKeys = ['ATK','DEF','HP','EP','SP','法术ATK','法术强度'];
+      mapKeys.forEach(k => { if (o[k] !== undefined) stats.push({ key: k, value: String(o[k]) }); });
+    } catch {}
   }
 
   pairs.forEach(p => {
@@ -916,10 +946,23 @@ function openDetail(obj: any, type: 'equip' | 'item' | 'blood' | 'skill' | 'char
       let reunionLevel = v((reunionRaw as any)['等级'], '无');
       let reunionReasons: any = (reunionRaw as any)['理由'];
       if (Array.isArray(reunionReasons)) reunionReasons = reunionReasons.filter((x:any)=>x && String(x).trim() !== '');
+      // 补全角色属性：若传入对象缺少属性/修正值，则尝试从 statData 按姓名回填
+      let srcAttr: any = (obj as any)?.属性 || {};
+      if (!srcAttr || Object.keys(srcAttr).length === 0) {
+        try {
+          const name = String((obj as any).姓名 || (obj as any).名称 || '').trim();
+          if (name && statData.value) {
+            const fromSD = Object.values(statData.value).find((x:any)=> String(x?.姓名||'') === name) as any;
+            if (fromSD && fromSD.属性) srcAttr = fromSD.属性;
+          }
+        } catch {}
+      }
+      const srcMods = (srcAttr?.修正值) || (srcAttr?.修正) || {};
       charModal.value = {
-        base: (obj as any)?.属性?.基础 || {},
-        der: (obj as any)?.属性?.衍生 || {},
-        preset: (obj as any)?.属性?.预设检定 || {},
+        base: srcAttr?.基础 || {},
+        der: srcAttr?.衍生 || {},
+        preset: srcAttr?.预设检定 || {},
+        mods: srcMods || {},
         rank: v((obj as any)?.属性?.综合评级 || (obj as any)?.综合评级, 'D'),
         equips: listOf((obj as any)['装备栏']),
         items: listOf((obj as any)['物品栏']),
