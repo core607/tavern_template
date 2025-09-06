@@ -897,15 +897,16 @@ const sendDisabledReason = computed(()=> {
         const newTier = String(getRatingForSum(newSum));
         const evoName = newTier !== initTier ? formatEvolvedBloodName(it.blood, newTier) : it.blood;
         if (newTier !== initTier) {
-          lines.push(`*   **警报:** [${it.blood}] 基因序列发生质变跃迁！已进化至 [${evoName}]！`);
-          lines.push(`*   **系统演算中:** 正在根据新的基因模板，随机生成同阶核心能力与被动技能...`);
+          lines.push(`*   **警报:** [${it.blood}] 基因序列发生质变跃迁！等级提升！`);
+          lines.push(`*   **系统演算中:** 正在根据进化后的基因序列特性，随机生成同阶核心能力与被动技能,或对原有能力进行升级...`);
         }
         lines.push(`*   **目标:** [${it.blood}] 基因序列。`);
         const cost = calculateDynamicCost(base, sumPts);
         lines.push(`*   **操作:** 注入高维能量，执行定向强化。消耗 ${cost} 空间币。`);
         const baseBonuses = (attrDraftMeta.value[baseKey]?.bonuses || {}) as Record<string, number>;
         const updated = CORE_ATTRIBUTES.map(a => `${a}+${(baseBonuses[a]||0) + (it.points[a]||0)}`);
-        lines.push(`*   **强化结果:** [${it.blood}] 的属性加成已更新为: ${updated.join(', ')}`);
+        lines.push(`*   **强化结果:** 基因序列的属性加成已更新为: ${updated.join(', ')}`);
+        lines.push(`*   **系统:** 新的基因序列名称、能力、技能正在生成中...`);
         lines.push('');
       });
     });
@@ -913,7 +914,7 @@ const sendDisabledReason = computed(()=> {
   lines.push('## 【物质兑换清单】');
   selectedList.value.forEach(x=>{
     const qty = Math.max(1, x.qty||1);
-    const subtotal = (x.item.price||0) * qty;
+    const subtotal = (x.item.price||0) * qty;powershell -NoProfile -Command "git add -A; git commit -m 'feat(status): 属性修正区块与NPC详情修正值; build: update dist'; git push"
     lines.push(`*   **项目:** ${x.item.name} [评级:${x.item.rating}] × ${qty}`);
     lines.push(`*   **小计:** ${subtotal} 空间币`);
   });
