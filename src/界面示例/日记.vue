@@ -29,7 +29,11 @@ onMounted(() => {
 });
 </script>
 
+<<<<<<< HEAD
 <style lang="scss">
+=======
+<style lang="scss" scoped>
+>>>>>>> a2706b50e3b9156f0d57184e1ea924b52fba2c6a
 body {
   display: flex;
   justify-content: center;

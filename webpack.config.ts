@@ -10,6 +10,10 @@ import TerserPlugin from 'terser-webpack-plugin';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import { VueLoaderPlugin } from 'vue-loader';
 import webpack from 'webpack';
+<<<<<<< HEAD
+=======
+import WebpackObfuscator from 'webpack-obfuscator';
+>>>>>>> a2706b50e3b9156f0d57184e1ea924b52fba2c6a
 const require = createRequire(import.meta.url);
 const HTMLInlineCSSWebpackPlugin = require('html-inline-css-webpack-plugin').default;
 
@@ -45,7 +49,13 @@ function common_path(lhs: string, rhs: string) {
 }
 
 function glob_script_files() {
+<<<<<<< HEAD
   const files: string[] = fs.globSync(`src/**/index.{ts,js}`);
+=======
+  const files: string[] = fs
+    .globSync(`src/**/index.{ts,js}`)
+    .filter(file => process.env.CI !== 'true' || !fs.readFileSync(path.join(__dirname, file)).includes('@no-ci'));
+>>>>>>> a2706b50e3b9156f0d57184e1ea924b52fba2c6a
 
   const results: string[] = [];
   const handle = (file: string) => {
@@ -64,7 +74,10 @@ function glob_script_files() {
     results.push(file);
   };
   files.forEach(handle);
+<<<<<<< HEAD
   console.info(results);
+=======
+>>>>>>> a2706b50e3b9156f0d57184e1ea924b52fba2c6a
   return results;
 }
 
@@ -96,6 +109,7 @@ function watch_it(compiler: webpack.Compiler) {
 }
 
 function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Configuration {
+<<<<<<< HEAD
   const script_filepath = path.parse(entry.script);
 
   let plugins: webpack.Configuration['plugins'] = [];
@@ -120,6 +134,11 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
   }
   plugins.push({ apply: watch_it }, new VueLoaderPlugin());
 
+=======
+  const should_obfuscate = fs.readFileSync(path.join(__dirname, entry.script), 'utf-8').includes('@obfuscate');
+  const script_filepath = path.parse(entry.script);
+
+>>>>>>> a2706b50e3b9156f0d57184e1ea924b52fba2c6a
   return (_env, argv) => ({
     experiments: {
       outputModule: true,
@@ -204,8 +223,43 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
               use: 'html-loader',
               exclude: /node_modules/,
             },
+<<<<<<< HEAD
             {
               test: /\.(sa|sc)ss$/,
+=======
+          ].concat(
+            entry.html === undefined
+              ? <any[]>[
+                  {
+                    test: /\.vue\.s(a|c)ss$/,
+                    use: [
+                      'vue-style-loader',
+                      { loader: 'css-loader', options: { url: false } },
+                      'postcss-loader',
+                      'sass-loader',
+                    ],
+                    exclude: /node_modules/,
+                  },
+                  {
+                    test: /\.vue\.css$/,
+                    use: ['vue-style-loader', { loader: 'css-loader', options: { url: false } }, 'postcss-loader'],
+                    exclude: /node_modules/,
+                  },
+                  {
+                    test: /\.s(a|c)ss$/,
+                    use: [{ loader: 'css-loader', options: { url: false } }, 'postcss-loader', 'sass-loader'],
+                    exclude: /node_modules/,
+                  },
+                  {
+                    test: /\.css$/,
+                    use: [{ loader: 'css-loader', options: { url: false } }, 'postcss-loader'],
+                    exclude: /node_modules/,
+                  },
+                ]
+              : <any[]>[
+                  {
+                    test: /\.s(a|c)ss$/,
+>>>>>>> a2706b50e3b9156f0d57184e1ea924b52fba2c6a
               use: [
                 MiniCssExtractPlugin.loader,
                 { loader: 'css-loader', options: { url: false } },
@@ -216,10 +270,22 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
             },
             {
               test: /\.css$/,
+<<<<<<< HEAD
               use: [MiniCssExtractPlugin.loader, { loader: 'css-loader', options: { url: false } }, 'postcss-loader'],
               exclude: /node_modules/,
             },
           ],
+=======
+                    use: [
+                      MiniCssExtractPlugin.loader,
+                      { loader: 'css-loader', options: { url: false } },
+                      'postcss-loader',
+                    ],
+                    exclude: /node_modules/,
+                  },
+                ],
+          ),
+>>>>>>> a2706b50e3b9156f0d57184e1ea924b52fba2c6a
         },
       ],
     },
@@ -233,7 +299,42 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
       ],
       alias: {},
     },
+<<<<<<< HEAD
     plugins: plugins,
+=======
+    plugins: (entry.html === undefined
+      ? [new MiniCssExtractPlugin()]
+      : [
+          new HtmlWebpackPlugin({
+            template: path.join(__dirname, entry.html),
+            filename: path.parse(entry.html).base,
+            scriptLoading: 'module',
+            cache: false,
+          }),
+          new HtmlInlineScriptWebpackPlugin(),
+          new MiniCssExtractPlugin(),
+          new HTMLInlineCSSWebpackPlugin({
+            styleTagFactory({ style }: { style: string }) {
+              return `<style>${style}</style>`;
+            },
+          }),
+        ]
+    )
+      .concat({ apply: watch_it }, new VueLoaderPlugin())
+      .concat(
+        should_obfuscate
+          ? [
+              new WebpackObfuscator({
+                controlFlowFlattening: true,
+                numbersToExpressions: true,
+                selfDefending: true,
+                simplify: true,
+                splitStrings: true,
+              }),
+            ]
+          : [],
+      ),
+>>>>>>> a2706b50e3b9156f0d57184e1ea924b52fba2c6a
     optimization: {
       minimize: true,
       minimizer: [
@@ -281,6 +382,10 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
           request.startsWith('-') ||
           request.startsWith('.') ||
           request.startsWith('/') ||
+<<<<<<< HEAD
+=======
+          request.startsWith('!') ||
+>>>>>>> a2706b50e3b9156f0d57184e1ea924b52fba2c6a
           request.startsWith('http') ||
           path.isAbsolute(request) ||
           fs.existsSync(path.join(context, request)) ||
