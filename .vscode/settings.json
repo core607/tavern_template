@@ -18,6 +18,10 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[vue]": {
+<<<<<<< HEAD
     "editor.defaultFormatter": "Vue.volar"
+=======
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+>>>>>>> 1f7ef5aaf18790e8a2b89ee4f826268a18695d7d
   }
 }
