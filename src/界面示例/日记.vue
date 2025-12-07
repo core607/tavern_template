@@ -5,8 +5,11 @@
 </template>
 
 <script setup lang="ts">
+<<<<<<< HEAD
 import { onMounted, ref } from 'vue';
 
+=======
+>>>>>>> 98077453194bdd416e9ea009fc17319ae1e483ca
 const display_text = ref('');
 
 function captureDisplayText() {
@@ -29,7 +32,11 @@ onMounted(() => {
 });
 </script>
 
+<<<<<<< HEAD
 <style lang="scss">
+=======
+<style lang="scss" scoped>
+>>>>>>> 98077453194bdd416e9ea009fc17319ae1e483ca
 body {
   display: flex;
   justify-content: center;
