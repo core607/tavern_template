@@ -51,7 +51,7 @@
     "type-fest": "^4.41.0",
     "typescript": "6.0.0-dev.20250807",
     "vue-loader": "^17.4.2",
-    "webpack": "^5.105.1",
+    "webpack": "^5.105.2",
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
